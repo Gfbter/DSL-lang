@@ -9,4 +9,9 @@ public class Grouping extends Expr{
     public Expr getExpression() {
         return expression;
     }
+
+    @Override
+    public OperationResult Eval() {
+        return null;
+    }
 }

@@ -297,7 +297,7 @@ public class Parser {
 
         if(match(compile.core.Lexer.RegExp.LexemType.VARIABLE)){
             return new Variable(previous().getValue(), LexemType.STRING);
-            return new Variable(previous().getValue(), LexemType.INT);
+            //return new Variable(previous().getValue(), LexemType.INT);
         }
 
         if(match(compile.core.Lexer.RegExp.LexemType.LEFT_PAREN))

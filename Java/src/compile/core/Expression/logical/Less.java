@@ -3,10 +3,7 @@ package compile.core.Expression.logical;
 import compile.core.Expression.arithmetic.Binary;
 import compile.core.Expression.operation.Expr;
 import compile.core.Expression.operation.OperationResult;
-import compile.core.Expression.operation.LexemType;
-
-import static compile.core.Expression.operation.LexemType.INT;
-
+import compile.core.Lexer.RegExp.LexemType;
 public class Less extends Binary {
     public Less(Expr left, Expr right){
         this.left = left;
@@ -16,7 +13,7 @@ public class Less extends Binary {
     public OperationResult Eval(){
         OperationResult left_res = left.Eval();
         OperationResult right_res = right.Eval();
-        OperationResult res = new OperationResult(INT);
+        OperationResult res = new OperationResult(LexemType.INT);
 
         if ((left_res.getResultType() == LexemType.INT && right_res.getResultType() == LexemType.INT)) {
             if (left_res.getIntResult() < right_res.getIntResult()){

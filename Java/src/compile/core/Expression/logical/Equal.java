@@ -3,7 +3,7 @@ package compile.core.Expression.logical;
 import compile.core.Expression.arithmetic.Binary;
 import compile.core.Expression.operation.Expr;
 import compile.core.Expression.operation.OperationResult;
-import compile.core.Expression.operation.LexemType;
+import compile.core.Lexer.RegExp.LexemType;
 
 public class Equal extends Binary {
     public Equal(Expr left, Expr right){

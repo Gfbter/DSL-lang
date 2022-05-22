@@ -2,7 +2,7 @@ package compile.core.Expression.arithmetic;
 
 import compile.core.Expression.operation.Expr;
 import compile.core.Expression.operation.OperationResult;
-import compile.core.Expression.operation.LexemType;
+import compile.core.Lexer.RegExp.LexemType;
 
 public class Module extends Binary {
     public Module(Expr left, Expr right){

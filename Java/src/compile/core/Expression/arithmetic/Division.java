@@ -2,7 +2,7 @@ package compile.core.Expression.arithmetic;
 
 import compile.core.Expression.operation.Expr;
 import compile.core.Expression.operation.OperationResult;
-import compile.core.Expression.operation.LexemType;
+import compile.core.Lexer.RegExp.LexemType;
 
 public class Division extends Binary {
     public Division(Expr left, Expr right){

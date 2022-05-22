@@ -47,7 +47,7 @@ public enum LexemType {
     // KEYWORDS
     //TRUE,
     //FALSE,
-    //NULL,
+    NULL,
     AND,
     OR,
     IF,

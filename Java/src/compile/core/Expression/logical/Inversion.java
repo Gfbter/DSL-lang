@@ -2,7 +2,7 @@ package compile.core.Expression.logical;
 
 import compile.core.Expression.operation.Expr;
 import compile.core.Expression.operation.OperationResult;
-import compile.core.Expression.operation.LexemType;
+import compile.core.Lexer.RegExp.LexemType;
 import compile.core.Expression.arithmetic.Unary;
 
 public class Inversion extends Unary {
