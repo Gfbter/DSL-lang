@@ -15,7 +15,6 @@ public class Var extends Stmt{
         this.initializer = initializer;
     }
 
-
     public Token getToken() {
         return token;
     }
