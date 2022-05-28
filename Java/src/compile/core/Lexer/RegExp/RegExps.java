@@ -12,8 +12,8 @@ public class RegExps {
     static {
         lexems.add(new RegExp(LexemType.LEFT_PAREN, Pattern.compile("^\\(")));
         lexems.add(new RegExp(LexemType.RIGHT_PAREN, Pattern.compile("^\\)")));
-        lexems.add(new RegExp(LexemType.LEFT_BRACE, Pattern.compile("^}")));
-        lexems.add(new RegExp(LexemType.RIGHT_BRACE, Pattern.compile("^\\{")));
+        lexems.add(new RegExp(LexemType.RIGHT_BRACE, Pattern.compile("^}")));
+        lexems.add(new RegExp(LexemType.LEFT_BRACE, Pattern.compile("^\\{")));
         lexems.add(new RegExp(LexemType.COMMA, Pattern.compile("^,")));
         lexems.add(new RegExp(LexemType.SEMICOLON, Pattern.compile("^;")));
         lexems.add(new RegExp(LexemType.MINUS, Pattern.compile("^-")));
@@ -38,11 +38,12 @@ public class RegExps {
         lexems.add(new RegExp(LexemType.FOR, Pattern.compile("^for")));
         lexems.add(new RegExp(LexemType.WHILE, Pattern.compile("^while")));
         lexems.add(new RegExp(LexemType.DO, Pattern.compile("^do")));
+        lexems.add(new RegExp(LexemType.COMMA, Pattern.compile("^,")));
+        lexems.add(new RegExp(LexemType.RETURN, Pattern.compile("^return")));
         lexems.add(new RegExp(LexemType.PRINT, Pattern.compile("^print")));
-        lexems.add(new RegExp(LexemType.PRINT, Pattern.compile("^print")));
-        lexems.add(new RegExp(LexemType.VARIABLE, Pattern.compile("^([a-zA-Z][a-zA-Z0-9]*)")));
+        lexems.add(new RegExp(LexemType.VARIABLE, Pattern.compile("^_?([a-zA-Z][a-zA-Z0-9]*)")));
         lexems.add(new RegExp(LexemType.DIGIT, Pattern.compile("^(0|([1-9][0-9]*))")));
         lexems.add(new RegExp(LexemType.SEPARATOR, Pattern.compile("^([ \t\n])")));
-        lexems.add(new RegExp(LexemType.QUOTES, Pattern.compile("^\"")));
+        lexems.add(new RegExp(LexemType.TEXT, Pattern.compile("^\"[a-zA-Z .:,;@!?\n\t]*\"")));
     }
 }

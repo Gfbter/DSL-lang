@@ -1,26 +1,33 @@
 package compile.core.Expression.arithmetic;
 
-import compile.core.Expression.operation.IAssignable;
+import compile.Environment;
+import compile.Interpreter;
 import compile.core.Expression.operation.Expr;
-import compile.core.Expression.operation.OperationResult;
+import compile.core.Token.Token;
 
-import java.util.Hashtable;
+public class Assign extends Expr {
+    protected Token name;
+    protected Expr expression;
 
-public class Assign extends Binary {
-    protected IAssignable left;
-    protected Expr right;
+    protected Token operation;
 
-    public Assign(Expr left, Expr right, Hashtable<String, OperationResult> globals) {
-        if (left instanceof IAssignable)
-            this.left = (IAssignable) left;
-        this.right = right;
+    public Assign(Token name, Expr value) {
+        this.name = name;
+        this.expression = value;
     }
 
-    public OperationResult Eval() {
-        OperationResult result = right.Eval();
-        if (left.getType() == result.getResultType())
-            left.setValue(result);
+    public Token getName() {
+        return name;
+    }
 
-        return null; //result;
+    public Expr getExpression() {
+        return expression;
+    }
+
+    @Override
+    public Object Eval(Environment environment, Interpreter interpreter) {
+        Object value = this.expression.Eval(environment, interpreter);
+        environment.Assign(this.getName(), this.getExpression().Eval(environment, interpreter));
+        return value;
     }
 }

@@ -1,43 +1,22 @@
 package compile.core.Expression.logical;
 
+import compile.Environment;
+import compile.Interpreter;
 import compile.core.Expression.arithmetic.Binary;
 import compile.core.Expression.operation.Expr;
-import compile.core.Expression.operation.OperationResult;
-import compile.core.Lexer.RegExp.LexemType;
+import compile.core.Token.Token;
 
 public class GreaterEqual extends Binary {
-    public GreaterEqual(Expr left, Expr right){
-        this.left = left;
-        this.right = right;
+    public GreaterEqual(Expr left, Token operation, Expr right){
+        super(left, operation, right);
     }
 
-    public OperationResult Eval(){
-        OperationResult left_res = left.Eval();
-        OperationResult right_res = right.Eval();
-        OperationResult res = new OperationResult(LexemType.INT);
+    @Override
+    public Object Eval(Environment environment, Interpreter interpreter) {
+        Object left_res = left.Eval(environment, interpreter);
+        Object right_res = right.Eval(environment, interpreter);
 
-        if ((left_res.getResultType() == LexemType.INT && right_res.getResultType() == LexemType.INT)) {
-            if (left_res.getIntResult() >= right_res.getIntResult()){
-                res.setIntResult(1);
-                return res;
-            }
-            else {
-                res.setIntResult(0);
-                return res;
-            }
-        }
-
-        if ((left_res.getResultType() ==  LexemType.STRING && right_res.getResultType() ==  LexemType.STRING)){
-            if (left_res.getStringResult().compareTo(right_res.getStringResult()) >= 0){
-                res.setIntResult(1);
-                return res;
-            }
-            else{
-                res.setIntResult(0);
-                return res;
-            }
-        }
-
-        return null;
+        checkNumberOperands(left_res, right_res);
+        return (Integer)left_res >= (Integer) right_res;
     }
 }

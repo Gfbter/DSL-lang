@@ -9,23 +9,20 @@ import compile.core.ParseException;
 import compile.core.Statement.*;
 import compile.core.Token.Token;
 import compile.core.Expression.operation.*;
-import compile.core.Expression.operation.Number;
 
 import java.util.*;
 
 public class Parser {
     private List<Token> tokens = new LinkedList<Token>();
     private Integer iterator = 0;
-    Hashtable<String, OperationResult> globals;
 
     private static class ParseError extends RuntimeException {}
 
-    Parser(List<Token> tokens){
+    public Parser(List<Token> tokens){
         this.tokens = tokens;
-        globals = new Hashtable<String, OperationResult>();
     }
 
-    private LinkedList<Stmt> parse(){
+    public LinkedList<Stmt> parse(){
         LinkedList<Stmt> statements = new LinkedList();
         while(!isEnd()){
             statements.add(declaration());
@@ -48,23 +45,25 @@ public class Parser {
     private Stmt varDeclaration(){
         Token name = consume(compile.core.Lexer.RegExp.LexemType.VARIABLE, "Expect variable name.");
         Expr initializer = null;
-        if(match(compile.core.Lexer.RegExp.LexemType.ASSIGN)){
+        if(match(LexemType.ASSIGN)){
             initializer = expression();
         }
         consume(compile.core.Lexer.RegExp.LexemType.SEMICOLON, "Expect ';' after variable declaration.");
-        return new Var(name.getValue(), initializer);
+        return new Var(name, initializer);
     }
 
     private Stmt statement(){
-        if(match(compile.core.Lexer.RegExp.LexemType.FOR))
+        if(match(LexemType.FOR))
             return forStatement();
-        if(match(compile.core.Lexer.RegExp.LexemType.IF))
+        if(match(LexemType.IF))
             return ifStatement();
-        if(match(compile.core.Lexer.RegExp.LexemType.PRINT))
+        if(match(LexemType.PRINT))
             return printStatement();
-        if(match(compile.core.Lexer.RegExp.LexemType.WHILE))
+//        if(match(LexemType.RETURN))
+//            return returnStatement();
+        if(match(LexemType.WHILE))
             return whileStatement();
-        if(match(compile.core.Lexer.RegExp.LexemType.LEFT_BRACE))
+        if(match(LexemType.LEFT_BRACE))
             return new Block(block());
 
         return expressionStatement();
@@ -75,17 +74,13 @@ public class Parser {
         consume(compile.core.Lexer.RegExp.LexemType.LEFT_PAREN, "Expect '(' after 'for'.");
 
         Stmt initializer;
-        if (match(compile.core.Lexer.RegExp.LexemType.SEMICOLON))
-        {
+        if (match(LexemType.SEMICOLON)){
             initializer = null;
         }
-        else if (match(compile.core.Lexer.RegExp.LexemType.VARIABLE
-        ))
-        {
+        else if(match(new LexemType[] {LexemType.INT, LexemType.STRING})){
             initializer = varDeclaration();
         }
-        else
-        {
+        else{
             initializer = expressionStatement();
         }
 
@@ -109,12 +104,13 @@ public class Parser {
             body = new Block(Arrays.asList(body, new Expression(increment)));
         }
 
-        if (condition == null) condition = new Number(new OperationResult(LexemType.INT, 1));
+        if (condition == null)
+            condition = new Primary(1);
         body = new While(condition, body);
 
         if (initializer != null)
         {
-            body = new Block(Arrays.asList(body, initializer));
+            body = new Block(Arrays.asList(initializer, body));
         }
 
         return body;
@@ -142,6 +138,16 @@ public class Parser {
         consume(compile.core.Lexer.RegExp.LexemType.SEMICOLON, "Expect ';' after value.");
         return new Print(value);
     }
+
+//    private Stmt returnStatement(){
+//        Token keyword = previous();
+//        Expr value = null;
+//        if(!check(LexemType.SEMICOLON)){
+//            value = expression();
+//        }
+//        consume(LexemType.SEMICOLON, "Expect ';' after return value.");
+//        return new Return(keyword, value);
+//    }
 
     private Stmt whileStatement()
     {
@@ -174,133 +180,167 @@ public class Parser {
         return statements;
     }
 
+//    private Function function(){
+//        Token name = consume(LexemType.VARIABLE, "Expect function name.");
+//        consume(LexemType.VARIABLE, "Expect '(' after function name.");
+//        LinkedList<Token> parameters = new LinkedList<Token>();
+//        if(!check(LexemType.RIGHT_PAREN)){
+//            do {
+//                parameters.add(consume(LexemType.VARIABLE, "Expect parameter name."));
+//            } while(match(LexemType.COMMA));
+//        }
+//        consume(LexemType.RIGHT_PAREN, "Expect ')' after parameters.");
+//        consume(LexemType.LEFT_BRACE, "Expect '{' before function body.");
+//        LinkedList<Stmt> body = block();
+//        return new Function(name, parameters, body);
+//    }
+
     private Expr expression() {
         return assignment();
     }
 
     private Expr assignment(){
         Expr expr = or();
-        Expr result = null;
 
-        if(match(compile.core.Lexer.RegExp.LexemType.ASSIGN)){
-            result = new Assign(expr, and(), globals);
+            if (match(LexemType.ASSIGN))
+            {
+                Token equals = previous();
+                Expr value = assignment();
+
+                if (expr instanceof Variable) {
+                Token name = ((Variable)expr).getName();
+                return new Assign(name, value);
+            }
+
+            error(equals, "Invalid assignment target.");
         }
-        return null;
+
+        return expr;
     }
 
     private Expr or(){
         Expr expr = and();
-        Expr result = null;
 
         while(match(compile.core.Lexer.RegExp.LexemType.OR)){
-            result = new Or(expr, and());
+            expr = new Or(expr, previous(), and());
         }
-        return null;
+        return expr;
     }
 
     private Expr and(){
         Expr expr = equality();
-        Expr result = null;
 
-        while(match(compile.core.Lexer.RegExp.LexemType.AND)){
-            result = new And(expr, equality());
+        while(match(LexemType.AND)){
+            expr = new And(expr, previous(), equality());
         }
 
-        return result;
+        return expr;
     }
 
     private Expr equality(){
         Expr expr = comparison();
-        Expr result = null;
 
-        while(match(new compile.core.Lexer.RegExp.LexemType[] { compile.core.Lexer.RegExp.LexemType.NOT_EQUAL, compile.core.Lexer.RegExp.LexemType.EQUAL})){
+        while(match(new LexemType[] { LexemType.NOT_EQUAL, LexemType.EQUAL})){
+            Token operation = previous();
+            Expr right = comparison();
             switch(previous().getType()){
-                case NOT_EQUAL -> result = new notEqual(expr, comparison());
-                case EQUAL -> result = new Equal(expr, comparison());
+                case NOT_EQUAL: expr = new notEqual(expr, operation, right);
+                case EQUAL: expr = new Equal(expr, operation, right);
             }
         }
-
-        return result;
+        return expr;
     }
 
     private Expr comparison(){
         Expr expr = term();
-        Expr result = null;
 
         while(match(new compile.core.Lexer.RegExp.LexemType[]{ compile.core.Lexer.RegExp.LexemType.GREATER, compile.core.Lexer.RegExp.LexemType.GREATER_EQUAL, compile.core.Lexer.RegExp.LexemType.LESS, compile.core.Lexer.RegExp.LexemType.LESS_EQUAL})){
             switch(previous().getType()){
-                case GREATER -> result = new Greater(expr, term());
-                case GREATER_EQUAL -> result = new GreaterEqual(expr, term());
-                case LESS -> result = new Less(expr, term());
-                case LESS_EQUAL -> result = new LessEqual(expr, term());
+                case GREATER -> expr = new Greater(expr, previous(), term());
+                case GREATER_EQUAL -> expr = new GreaterEqual(expr, previous(), term());
+                case LESS -> expr = new Less(expr, previous(), term());
+                case LESS_EQUAL -> expr = new LessEqual(expr, previous(), term());
             }
         }
-
-        return result;
+        return expr;
     }
 
     private Expr term(){
         Expr expr = factor();
-        Expr result = null;
 
         while(match(new compile.core.Lexer.RegExp.LexemType[] {compile.core.Lexer.RegExp.LexemType.MINUS, compile.core.Lexer.RegExp.LexemType.PLUS})){
             switch(previous().getType()){
-                case MINUS -> result = new Subtraction(expr, unary());//unary?? mb term()
-                case PLUS -> result = new Additional(expr, unary());
+                case MINUS -> expr = new Subtraction(expr, previous(), unary());//unary?? mb term()
+                case PLUS -> expr = new Additional(expr, previous(), unary());
             }
         }
 
-        return result;
+        return expr;
     }
 
     private Expr factor(){
         Expr expr = unary();
-        Expr result = null;
 
-        while(match(new compile.core.Lexer.RegExp.LexemType[]{ compile.core.Lexer.RegExp.LexemType.DIVISION, compile.core.Lexer.RegExp.LexemType.MOD, compile.core.Lexer.RegExp.LexemType.MULT})){
-            switch(previous().getType()){
-                case DIVISION -> result = new Division(expr, unary());
-                case MOD -> result = new Module(expr, unary());
-                case MULT -> result = new Multiplication(expr, unary());
+        while(match(new LexemType[]{ LexemType.DIVISION, LexemType.MOD, LexemType.MULT})){
+            switch(previous().getType()) {
+                case DIVISION -> expr = new Division(expr, previous(), unary());
+                case MOD -> expr = new Module(expr, previous(), unary());
+                case MULT -> expr = new Multiplication(expr, previous(), unary());
             }
         }
 
-        return result;
+        return expr;
     }
 
     private Expr unary(){
         if(match(new compile.core.Lexer.RegExp.LexemType[] {compile.core.Lexer.RegExp.LexemType.NOT, compile.core.Lexer.RegExp.LexemType.MINUS})){
             Expr result = null;
             switch(previous().getType()){
-                case NOT -> result = new Inversion(unary());
-                case MINUS -> result = new UnaryMinus(unary());
+                case NOT -> result = new Inversion(previous(), unary());
+                case MINUS -> result = new UnaryMinus(previous(), unary());
             }
             return result;
         }
 
-        return primary();
+        return call();
+    }
+
+    private Expr call(){
+        Expr expr = primary();
+        while(match(LexemType.LEFT_PAREN)){
+            expr = finishCall(expr);
+        }
+
+        return expr;
+    }
+
+    private Expr finishCall(Expr caller){
+        LinkedList<Expr> arguments = new LinkedList<Expr>();
+        if(!check(LexemType.RIGHT_PAREN)){
+            do{
+                arguments.add(expression());
+            }while (match(LexemType.COMMA));
+        }
+        Token paren = consume(LexemType.RIGHT_PAREN, "Expect ')' after arguments.");
+
+        return new Call(caller, paren, arguments);
     }
 
     private Expr primary()
     {
-        if(match(compile.core.Lexer.RegExp.LexemType.STRING)){
-            OperationResult result = new OperationResult(LexemType.STRING);
-            result.setStringResult(previous().getValue());
-            return new Str(result);
+        if(match(LexemType.DIGIT)){
+            return new Primary(Integer.parseInt(previous().getValue()));
         }
 
-        if(match(compile.core.Lexer.RegExp.LexemType.INT)){
-            OperationResult result = new OperationResult(LexemType.STRING);
-            result.setIntResult(Integer.parseInt(previous().getValue()));
-            return new Number(result);
+        if(match(LexemType.VARIABLE)){
+            return new Variable(previous());
         }
 
-        if(match(compile.core.Lexer.RegExp.LexemType.VARIABLE)){
-            return new Variable(previous().getValue(), LexemType.STRING);
-            //return new Variable(previous().getValue(), LexemType.INT);
+        if(match(LexemType.TEXT)){
+            return new Primary(previous().getValue());
         }
 
-        if(match(compile.core.Lexer.RegExp.LexemType.LEFT_PAREN))
+        if(match(LexemType.LEFT_PAREN))
         {
             Expr expr = expression();
             consume(compile.core.Lexer.RegExp.LexemType.RIGHT_PAREN, "Expect ')' after expression.");

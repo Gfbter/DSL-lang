@@ -43,6 +43,7 @@ public enum LexemType {
 
     //TEXT
     DIGIT,
+    TEXT, //fix text -> string
 
     // KEYWORDS
     //TRUE,
@@ -55,8 +56,10 @@ public enum LexemType {
     FOR,
     WHILE,
     DO,
-    //FUNCTION,
-    //RETURN,
+    FUNCTION,
+    RETURN,
+    IDENTIFIER,
+    NATIVE_FUNC,
 
     // BUILTIN FUNCTION
     PRINT,

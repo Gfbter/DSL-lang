@@ -1,16 +1,24 @@
 package compile.core.Expression.arithmetic;
 
 import compile.core.Expression.operation.Expr;
-import compile.core.Expression.operation.OperationResult;
 import compile.core.Lexer.RegExp.LexemType;
+import compile.core.RuntimeError;
+import compile.core.Token.Token;
 
-public class Unary extends Expr {
-    protected Expr one;
+public abstract class Unary extends Expr {
+    protected Token operation;
+    protected Expr right;
 
-    public Unary(Expr op) {this.one = op; }
+    public Unary(Token operation, Expr right) {
+        this.operation  = operation;
+        this.right = right;
+    }
 
-    public Unary() {}
+    protected void checkNumberOperand(Token operation, Object operand)
+    {
+        if (operand instanceof Integer)
+            return;
 
-    @Override
-    public OperationResult Eval() {return new OperationResult(LexemType.NULL); }
+        throw new RuntimeError(operation, "Operand must be a number.");
+    }
 }

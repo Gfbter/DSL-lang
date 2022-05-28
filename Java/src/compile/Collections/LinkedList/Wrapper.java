@@ -1,49 +1,42 @@
 package compile.Collections.LinkedList;
 
 public class Wrapper<T> {
-    T value;
-    Wrapper prev;
-    Wrapper next;
+    private T item;
+    private Wrapper<T> prev;
+    private Wrapper<T> next;
 
     public Wrapper(T item){
-        this.value =item;
-        this.prev = null;
-        this.next = null;
-    }
-
-    public Wrapper(Wrapper<T> item){
-        this.value = item.value;
-        this.next = item.next;
-        this.prev = item.prev;
-    }
-
-    public Wrapper(){
-        this.value = null;
-        this.next = null;
-        this.prev = null;
+        this.item = item;
     }
 
     public T getItem() {
-        return value;
+        return item;
     }
 
-    public Wrapper getNext() {
+    public Wrapper<T> getNext() {
         return next;
     }
 
-    public Wrapper getPrev() {
+    public Wrapper<T> getPrev() {
         return prev;
     }
 
     public void setItem(T item) {
-        this.value = item;
+        this.item = item;
     }
 
-    public void setNext(Wrapper next) {
+    public void setNext(Wrapper<T> next) {
         this.next = next;
     }
 
-    public void setPrev(Wrapper prev) {
+    public void setPrev(Wrapper<T> prev) {
         this.prev = prev;
+    }
+
+    @Override
+    public String toString() {
+        return "Wrapper{" +
+                "value=" + item +
+                '}';
     }
 }

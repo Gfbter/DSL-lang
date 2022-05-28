@@ -1,20 +1,33 @@
 package compile.core.Expression.arithmetic;
 
 import compile.core.Expression.operation.Expr;
-import compile.core.Expression.operation.OperationResult;
 import compile.core.Lexer.RegExp.LexemType;
+import compile.core.RuntimeError;
+import compile.core.Token.Token;
 
-public class Binary extends Expr {
+public abstract class Binary extends Expr {
     protected Expr left;
     protected Expr right;
+    protected Token operation;
 
-    public Binary(Expr left, Expr right){
+    public Binary(Expr left, Token operation,  Expr right) {
         this.left = left;
         this.right = right;
+        this.operation = operation;
     }
 
-    public Binary(){}
+    protected boolean checkNumberOperands(Object left, Object right)
+    {
+        if (left instanceof Integer && right instanceof Integer)
+            return true;
 
-    @Override
-    public OperationResult Eval() {return new OperationResult(LexemType.NULL); }
+        throw new RuntimeError(operation, "Operand must be a number.");
+    }
+
+    protected boolean isEqual(Object a, Object b) {
+        if (a == null && b == null) return true;
+        if (a == null) return false;
+
+        return a.equals(b);
+    }
 }

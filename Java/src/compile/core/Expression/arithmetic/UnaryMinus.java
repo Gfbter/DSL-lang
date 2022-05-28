@@ -1,22 +1,22 @@
 package compile.core.Expression.arithmetic;
 
+import compile.Environment;
+import compile.Interpreter;
 import compile.core.Expression.operation.Expr;
-import compile.core.Expression.operation.OperationResult;
 import compile.core.Lexer.RegExp.LexemType;
+import compile.core.Token.Token;
 
 public class UnaryMinus extends Unary {
-    public UnaryMinus(Expr op){
-        one = op;
+
+    public UnaryMinus(Token operation, Expr right) {
+        super(operation, right);
     }
-    public OperationResult Eval(){
-        OperationResult res = one.Eval();
 
-        if (res.getResultType() == LexemType.INT){
-            res.setIntResult(-res.getIntResult());
-            return res;
-        }
+    @Override
+    public Object Eval(Environment environment, Interpreter interpreter) {
+        Object right_res = right.Eval(environment, interpreter);
 
-        System.out.println("Wrong operator type in Additional.Eval()");
-        return null;
+        checkNumberOperand(operation, right_res);
+        return ((Integer) right_res);
     }
 }

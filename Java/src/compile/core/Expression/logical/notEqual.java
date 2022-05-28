@@ -1,42 +1,21 @@
 package compile.core.Expression.logical;
 
+import compile.Environment;
+import compile.Interpreter;
 import compile.core.Expression.arithmetic.Binary;
 import compile.core.Expression.operation.Expr;
-import compile.core.Expression.operation.OperationResult;
-import compile.core.Lexer.RegExp.LexemType;
+import compile.core.Token.Token;
 
 public class notEqual extends Binary {
-    public notEqual(Expr left, Expr right){
-        this.left = left;
-        this.right = right;
+    public notEqual(Expr left, Token operation, Expr right){
+        super(left, operation, right);
     }
 
-    public OperationResult Eval(){
-        OperationResult left_res = left.Eval();
-        OperationResult right_res = right.Eval();
-        OperationResult res = new OperationResult(LexemType.INT);
+    @Override
+    public Object Eval(Environment environment, Interpreter interpreter) {
+        Object left_res = left.Eval(environment, interpreter);
+        Object right_res = right.Eval(environment, interpreter);
 
-        if ((left_res.getResultType() == LexemType.INT && right_res.getResultType() == LexemType.INT)) {
-            if(left_res.getIntResult() == right_res.getIntResult()){
-                res.setIntResult(0);
-                return res;
-            }
-            else {
-                res.setIntResult(1);
-                return res;
-            }
-        }
-
-        if ((left_res.getResultType() == LexemType.STRING && right_res.getResultType() == LexemType.STRING)) {
-            if(left_res.getStringResult().equals(right_res.getStringResult())){
-                res.setIntResult(0);
-            }
-            else {
-                res.setIntResult(1);
-            }
-        }
-
-
-        return null;
+        return !isEqual(left_res, right_res);
     }
 }

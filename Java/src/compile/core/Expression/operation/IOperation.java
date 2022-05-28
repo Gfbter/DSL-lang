@@ -1,7 +1,8 @@
 package compile.core.Expression.operation;
 
-import compile.core.Expression.operation.OperationResult;
+import compile.Environment;
+import compile.Interpreter;
 
 public interface IOperation {
-    OperationResult Eval();
-}
+        Object Eval(Environment environment, Interpreter interpreter);
+    }

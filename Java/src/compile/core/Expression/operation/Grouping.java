@@ -1,5 +1,8 @@
 package compile.core.Expression.operation;
 
+import compile.Environment;
+import compile.Interpreter;
+
 public class Grouping extends Expr{
     private Expr expression;
     public Grouping(Expr expression){
@@ -11,7 +14,7 @@ public class Grouping extends Expr{
     }
 
     @Override
-    public OperationResult Eval() {
-        return null;
+    public Object Eval(Environment environment, Interpreter interpreter) {
+        return this.expression.Eval(environment, interpreter);
     }
 }

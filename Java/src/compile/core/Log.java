@@ -25,7 +25,7 @@ public class Log
         }
     }
 
-    public static void runtimeError(RuntimeException error)
+    public static void runtimeError(RuntimeError error)
     {
         System.out.println(error.getMessage() + "\n[line " + error.getToken().getLine() + "]");
         hadRuntimeError = true;
