@@ -44,6 +44,6 @@ public class RegExps {
         lexems.add(new RegExp(LexemType.VARIABLE, Pattern.compile("^_?([a-zA-Z][a-zA-Z0-9]*)")));
         lexems.add(new RegExp(LexemType.DIGIT, Pattern.compile("^(0|([1-9][0-9]*))")));
         lexems.add(new RegExp(LexemType.SEPARATOR, Pattern.compile("^([ \t\n])")));
-        lexems.add(new RegExp(LexemType.TEXT, Pattern.compile("^\"[a-zA-Z .:,;@!?\n\t]*\"")));
+        lexems.add(new RegExp(LexemType.TEXT, Pattern.compile("^\"[a-zA-Z0-9 .:,;@!?\n\t]*\"")));
     }
 }
