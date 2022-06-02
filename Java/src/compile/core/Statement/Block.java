@@ -24,7 +24,7 @@ public class Block extends Stmt{
     @Override
     public void execute(Environment environment, Interpreter interpreter) {
         for(Stmt statement : this.StatementList){
-            statement.execute(environment, interpreter);
+            statement.execute(new Environment(environment), interpreter);
         }
     }
 }
